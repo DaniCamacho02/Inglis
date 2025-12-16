@@ -1,5 +1,7 @@
 {
-  "name": "Cambridge C1 Nexus AI",
-  "description": "Una aplicación gamificada de preparación para el examen C1 Advanced, con interfaz en español y contenido en inglés, impulsada por IA.",
-  "requestFramePermissions": []
+  "name": "Pitinglis Ai",
+  "description": "Una aplicación gamificada de preparación para idiomas, con interfaz en español y contenido en inglés, impulsada por IA.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }

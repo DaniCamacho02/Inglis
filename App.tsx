@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Mascot } from './components/Mascot';
@@ -9,6 +10,10 @@ import { Tutor } from './views/Tutor';
 import { Library } from './views/Library';
 import { StudyPlan } from './views/StudyPlan';
 import { PhrasalVerbs } from './views/PhrasalVerbs';
+import { Exams } from './views/Exams';
+import { Profile } from './views/Profile';
+import { Conversation } from './views/Conversation';
+import { Translator } from './views/Translator';
 import { ViewState, THEMES, UserStats } from './types';
 import { StorageService } from './services/storageService';
 
@@ -22,20 +27,16 @@ export default function App() {
     return () => window.removeEventListener('statsUpdated', updateStats);
   }, []);
 
-  const activeTheme = THEMES[currentView];
+  const activeTheme = THEMES[currentView] || THEMES[ViewState.DASHBOARD];
 
-  const renderView = () => {
-    switch(currentView) {
-      case ViewState.DASHBOARD: return <Dashboard stats={stats} />;
-      case ViewState.VOCABULARY: return <Vocabulary />;
-      case ViewState.GRAMMAR: return <Grammar />;
-      case ViewState.WRITING: return <Writing />;
-      case ViewState.TUTOR: return <Tutor />;
-      case ViewState.PHRASAL_VERBS: return <PhrasalVerbs />;
-      case ViewState.STUDY_PLAN: return <StudyPlan />;
-      case ViewState.LIBRARY: return <Library />;
-      default: return <Dashboard stats={stats} />;
-    }
+  // Helper to render view with persistence (hidden instead of unmounted)
+  const renderPersistentView = (view: ViewState, Component: React.ReactNode) => {
+      const isVisible = currentView === view;
+      return (
+          <div className={`${isVisible ? 'block h-full' : 'hidden h-full'}`}>
+              {Component}
+          </div>
+      );
   };
 
   return (
@@ -44,12 +45,13 @@ export default function App() {
       
       <main className="flex-1 flex flex-col overflow-hidden relative">
         {/* Dynamic Header */}
-        <header className="relative h-40 md:h-52 flex-shrink-0 overflow-hidden">
-            {/* Image Layer */}
+        <header className="relative h-40 md:h-52 flex-shrink-0 overflow-hidden transition-all duration-500">
+            {/* Image Layer - We update the src based on active theme */}
             <img 
+                key={activeTheme.img} // Key forces animation on change
                 src={activeTheme.img} 
                 alt="Header" 
-                className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[30s]"
+                className="w-full h-full object-cover animate-fade-in"
             />
             
             {/* Gradient Overlay for Text Readability (Light Theme) */}
@@ -62,10 +64,21 @@ export default function App() {
             </div>
         </header>
 
-        {/* Main Content Area */}
+        {/* Main Content Area - All views generated but only one visible */}
         <div className="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth bg-slate-50">
-            <div className="max-w-6xl mx-auto pb-24">
-                {renderView()}
+            <div className="max-w-6xl mx-auto pb-24 h-full">
+                {renderPersistentView(ViewState.DASHBOARD, <Dashboard stats={stats} />)}
+                {renderPersistentView(ViewState.VOCABULARY, <Vocabulary />)}
+                {renderPersistentView(ViewState.GRAMMAR, <Grammar />)}
+                {renderPersistentView(ViewState.WRITING, <Writing />)}
+                {renderPersistentView(ViewState.TUTOR, <Tutor />)}
+                {renderPersistentView(ViewState.PHRASAL_VERBS, <PhrasalVerbs />)}
+                {renderPersistentView(ViewState.STUDY_PLAN, <StudyPlan />)}
+                {renderPersistentView(ViewState.LIBRARY, <Library />)}
+                {renderPersistentView(ViewState.EXAMS, <Exams />)}
+                {renderPersistentView(ViewState.PROFILE, <Profile />)}
+                {renderPersistentView(ViewState.CONVERSATION, <Conversation />)}
+                {renderPersistentView(ViewState.TRANSLATOR, <Translator />)}
             </div>
         </div>
       </main>

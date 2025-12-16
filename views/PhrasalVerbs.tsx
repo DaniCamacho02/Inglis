@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Vocabulary } from './Vocabulary';
 import { Activity, Zap } from 'lucide-react';
